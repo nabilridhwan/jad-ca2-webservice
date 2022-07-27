@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 import dataStructures.Tour;
@@ -24,6 +25,8 @@ public class TourWebService {
 	public Response getAllTours() {
 		DatabaseConnection connection = new DatabaseConnection();
 		Tour[] tours = TourModel.getAllTours().query(connection);
+		
+		connection.close();
 		
 		return Response.status(200).entity(tours).build();
 	}
@@ -45,7 +48,11 @@ public class TourWebService {
 		
 		try {
 			idInInt = Integer.parseInt(id);
-			return Response.status(200).entity(idInInt).build();
+			// Get tours by Id
+			DatabaseConnection connection = new DatabaseConnection();
+			Tour[] tours =  TourModel.getTourById(idInInt).query(connection);
+			connection.close();
+			return Response.status(200).entity(tours).build();
 		}catch(NumberFormatException nfe) {
 			HashMap<String, String> errorObject = new HashMap<String, String>();
 			errorObject.put("message", "id is not a number");
