@@ -8,6 +8,7 @@
 package dataStructures;
 
 import DAO.TourModel;
+import dataStructures.Tour.Registrations;
 import utils.DatabaseConnection;
 
 import java.sql.ResultSet;
@@ -23,6 +24,7 @@ public class Tour {
     String tour_location;
     Image[] images;
     Date[] dates;
+    Registrations[] registrations;
     double average_rating;
     Review[] reviews;
     boolean refreshed;
@@ -110,6 +112,13 @@ public class Tour {
 
     public void refreshTour(DatabaseConnection conn) {
         dates = TourModel.getTourDates(this).query(conn);
+        
+        // Get registrations
+        for(Date date : dates) {
+        	Registrations[] registrations = TourModel.getTourRegistrationByTourDateId(date).query(conn);
+        	date.setRegistrations(registrations);
+        }
+        
         images = TourModel.getTourImages(this).query(conn);
         reviews = TourModel.getTourReviews(this).query(conn);
         average_rating = TourModel.getTourReviewAverage(this).query(conn)[0];
@@ -168,8 +177,19 @@ public class Tour {
         double price;
         int avail_slot;
         int max_slot;
+        
+        private Registrations[] registrations;
 
-        public Date(ResultSet rs) {
+        public Registrations[] getRegistrations() {
+			return registrations;
+		}
+
+		public void setRegistrations(Registrations[] registrations) {
+			this.registrations = registrations;
+		}
+
+		public Date(ResultSet rs) {
+        	DatabaseConnection conn = new DatabaseConnection();
             try {
                 id = rs.getInt("tour_date_id");
                 start = new java.util.Date(rs.getTimestamp("tour_start").getTime());
@@ -299,11 +319,16 @@ public class Tour {
         public byte getPax() {
             return pax;
         }
+        
+        public java.util.Date getCreatedAt(){
+        	return created_at;
+        }
 
         private int id;
         private int user_id;
         private int tour_date_id;
         private byte pax;
+        private java.util.Date created_at;
 
         public Registrations(ResultSet rs) {
             try {
@@ -311,6 +336,8 @@ public class Tour {
                 user_id = rs.getInt("user_id");
                 tour_date_id = rs.getInt("tour_date_id");
                 pax = rs.getByte("pax");
+                created_at = new java.util.Date(rs.getTimestamp("created_at").getTime());
+                
             } catch (Exception e) {
                 e.printStackTrace();
             }

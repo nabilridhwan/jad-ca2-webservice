@@ -177,6 +177,28 @@ public class TourModel {
             }
         };
     }
+    
+    public static IDatabaseQuery<Tour.Registrations> getTourRegistrationByTourDateId(Tour.Date tourDate) {
+        return databaseConnection -> {
+            Connection conn = databaseConnection.get();
+	            try {
+	                PreparedStatement prepStatement = conn.prepareStatement("SELECT *" +
+	                        " FROM tour_registration tr WHERE tr.tour_date_id = ?");
+	
+	                prepStatement.setInt(1, tourDate.getId());
+	                ResultSet rs = prepStatement.executeQuery();
+	
+	                ArrayList<Tour.Registrations> list = new ArrayList<>();
+	
+	                if (rs != null) while (rs.next()) list.add(new Tour.Registrations(rs));
+	
+	                return list.toArray(new Tour.Registrations[0]);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                return null;
+	            }
+	        };
+	    }
 
     public static IDatabaseQuery<Tour.Image> getTourImageById(int id) {
         return databaseConnection -> {
