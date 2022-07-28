@@ -339,14 +339,15 @@ public class TourModel {
     }
 
 
-    public static IDatabaseUpdate registerUserForTour(int userID, int tourDateID, int pax) {
+    public static IDatabaseUpdate registerUserForTour(int userID, int tourDateID, int pax, String stripe_transaction_id) {
         IDatabaseUpdate addUserToTour = databaseConnection -> {
             Connection conn = databaseConnection.get();
             try {
-                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tour_registration (user_id, tour_date_id, pax) VALUES (?, ?,?)");
+                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tour_registration (user_id, tour_date_id, pax, stripe_transaction_id) VALUES (?, ?,?, ?)");
                 pstmt.setInt(1, userID);
                 pstmt.setInt(2, tourDateID);
                 pstmt.setInt(3, pax);
+                pstmt.setString(4, stripe_transaction_id);
                 return pstmt.executeUpdate();
             } catch (Exception e) {
                 e.printStackTrace();
