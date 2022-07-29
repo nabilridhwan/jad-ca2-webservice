@@ -16,6 +16,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 import dataStructures.Tour;
+import dataStructures.Tour.Date;
 import utils.DatabaseConnection;
 import DAO.TourModel;
 import body.InsertNewTourBody;
@@ -88,13 +89,43 @@ public class TourWebService {
 
 	}
 	
-	@POST
-	@Path("/review/new")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@GET
+	@Path("/dates")
 	@Produces(MediaType.APPLICATION_JSON)
 	
-	public Response insertNewReviewForTour() {
-		
+	public Response insertNewReviewForTour(@QueryParam("id") String id) {
+
+		if (id == null) {
+			HashMap<String, String> errorObject = new HashMap<String, String>();
+			errorObject.put("message", "id is missing");
+			return Response.status(400).entity(errorObject).build();
+		}
+
+		Integer idInInt;
+
+		try {
+			idInInt = Integer.parseInt(id);
+			// Get tours by Id
+			DatabaseConnection connection = new DatabaseConnection();
+			Tour[] tours = TourModel.getTourById(idInInt).query(connection);
+			
+			if(tours.length == 0) {
+				return Response.status(400).entity(new responses.NotFoundError().buildResponseHashmap()).build();
+			}
+			
+			Tour tour = tours[0];
+			
+			// Get tour dates
+			Date[] tour_dates = TourModel.getTourDates(tour).query(connection);
+			
+			connection.close();
+			
+			return Response.status(Response.Status.OK).entity(tour_dates).build();
+		} catch (NumberFormatException nfe) {
+			HashMap<String, String> errorObject = new HashMap<String, String>();
+			errorObject.put("message", "id is not a number");
+			return Response.status(400).entity(errorObject).build();
+		}
 	}
 
 }
