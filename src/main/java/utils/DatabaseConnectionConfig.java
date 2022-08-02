@@ -16,5 +16,5 @@ public class DatabaseConnectionConfig {
 
     protected static final String databaseName = "jad";
     protected static final String user = "root";
-    protected static final String password = "root";
+    protected static final String password = "1234";
 }
