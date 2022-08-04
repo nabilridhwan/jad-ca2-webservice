@@ -106,6 +106,7 @@ public class TourWebService {
 		try {
 			idInInt = Integer.parseInt(id);
 			// Get tours by Id
+			System.out.println("int " + idInInt);
 			DatabaseConnection connection = new DatabaseConnection();
 			Tour[] tours = TourModel.getTourById(idInInt).query(connection);
 			
@@ -117,7 +118,8 @@ public class TourWebService {
 			
 			// Get tour dates
 			Date[] tour_dates = TourModel.getTourDates(tour).query(connection);
-			
+
+			System.out.println("tourDates " + tour_dates.length);
 			connection.close();
 			
 			return Response.status(Response.Status.OK).entity(tour_dates).build();
@@ -127,5 +129,38 @@ public class TourWebService {
 			return Response.status(400).entity(errorObject).build();
 		}
 	}
+	
+	@GET
+	@Path("/date")
+	@Produces(MediaType.APPLICATION_JSON)
+	
+	public Response getTourDate(@QueryParam("id") String id) {
 
+		if (id == null) {
+			HashMap<String, String> errorObject = new HashMap<String, String>();
+			errorObject.put("message", "id is missing");
+			return Response.status(400).entity(errorObject).build();
+		}
+
+		Integer idInInt;
+
+		try {
+			idInInt = Integer.parseInt(id);
+			// Get tours by Id
+			System.out.println("int " + idInInt);
+			DatabaseConnection connection = new DatabaseConnection();
+			
+			// Get tour dates
+			Date[] tour_dates = TourModel.getTourDateById(idInInt).query(connection);
+
+			System.out.println("tourDates " + tour_dates.length);
+			connection.close();
+			
+			return Response.status(Response.Status.OK).entity(tour_dates).build();
+		} catch (NumberFormatException nfe) {
+			HashMap<String, String> errorObject = new HashMap<String, String>();
+			errorObject.put("message", "id is not a number");
+			return Response.status(400).entity(errorObject).build();
+		}
+	}
 }

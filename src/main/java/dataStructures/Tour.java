@@ -166,6 +166,7 @@ public class Tour {
 
     public static class Date {
         int id;
+        int tour_id;
 
         public int getId() {
             return id;
@@ -177,21 +178,22 @@ public class Tour {
         double price;
         int avail_slot;
         int max_slot;
-        
+
+
         private Registrations[] registrations;
 
         public Registrations[] getRegistrations() {
-			return registrations;
-		}
+            return registrations;
+        }
 
-		public void setRegistrations(Registrations[] registrations) {
-			this.registrations = registrations;
-		}
+        public void setRegistrations(Registrations[] registrations) {
+            this.registrations = registrations;
+        }
 
-		public Date(ResultSet rs) {
-        	DatabaseConnection conn = new DatabaseConnection();
+        public Date(ResultSet rs) {
             try {
                 id = rs.getInt("tour_date_id");
+                tour_id = rs.getInt("tour_id");
                 start = new java.util.Date(rs.getTimestamp("tour_start").getTime());
                 end = new java.util.Date(rs.getTimestamp("tour_end").getTime());
                 shown = rs.getByte("show_tour") == 1;
@@ -232,13 +234,14 @@ public class Tour {
         private static String ParseTimeStamp(Timestamp timestamp) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(timestamp);
-            //2 digit
+            // 2 digit
             int day = calendar.get(Calendar.DAY_OF_MONTH);
             String month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, java.util.Locale.getDefault());
             int year = calendar.get(Calendar.YEAR);
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
-            return String.format("%02d", day) + " " + month + " " + year + " " + String.format("%02d", hour) + ":" + String.format("%02d", minute);
+            return String.format("%02d", day) + " " + month + " " + year + " " + String.format("%02d", hour) + ":"
+                    + String.format("%02d", minute);
         }
 
         public boolean isShown() {
@@ -246,9 +249,19 @@ public class Tour {
             return shown;
         }
 
+        @Override
+        public String toString() {
+            return getStartString() + "-" + getEndString() + " (" + getDuration() + ")";
+        }
+
+        public int getTour_id() {
+            return tour_id;
+        }
+
         public double getPrice() {
             return price;
         }
+
 
         public int getAvail_slot() {
             return avail_slot;
@@ -260,12 +273,54 @@ public class Tour {
 
         public String getDuration() {
             // add 1 day to include the start day
-            return String.format("%02d", (int) ((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1) + " days";
+            return String.format("%02d", (int) ((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1)
+                    + " days";
         }
 
-        @Override
-        public String toString() {
-            return getStartString() + "-" + getEndString() + " (" + getDuration() + ")";
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public void setTour_id(int tour_id) {
+            this.tour_id = tour_id;
+        }
+
+        public void setStart(java.util.Date start) {
+            this.start = start;
+        }
+
+        public void setEnd(java.util.Date end) {
+            this.end = end;
+        }
+
+        public void setShown(boolean shown) {
+            this.shown = shown;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
+        }
+
+        public static class Pair {
+            Date date;
+            int pax;
+
+            public Pair(Date date, int pax) {
+                this.date = date;
+                this.pax = pax;
+            }
+
+            public Date getDate() {
+                return date;
+            }
+
+            public int getPax() {
+                return pax;
+            }
+
+            public double getPrice() {
+                return date.getPrice() * pax;
+            }
         }
     }
 
