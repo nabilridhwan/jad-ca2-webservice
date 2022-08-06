@@ -1,3 +1,10 @@
+/*
+ * 	Name: Nabil Ridhwanshah Bin Rosli , Xavier Tay Cher Yew
+	Admin No: P2007421, P2129512
+	Class: DIT/FT/2A/01
+	Group Number: Group 4 - TAY CHER YEW XAVIER, NABIL RIDHWANSHAH BIN ROSLI 
+ * */
+
 package webservices;
 
 import java.util.Date;
@@ -31,7 +38,7 @@ public class CurrencyConversion {
 		
 		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 		
-		Response resp = invocationBuilder.header("apikey", "m4nEJVld876oMcySYvrKV5MMLfZUNhW8").get();
+		Response resp = invocationBuilder.header("apikey", "g9ipY110rch3ISSLcYZxT5QSmp4ORW3A").get();
 		
 		if(resp.getStatus() == Response.Status.OK.getStatusCode()) {
 			CurrencyApiBody body = resp.readEntity(CurrencyApiBody.class);
